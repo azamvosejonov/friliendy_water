@@ -1,0 +1,656 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "PureWave - Home" %}{% endblock %}
+{% block content %}
+<style>
+    .wave-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.3)" fill-opacity="1" d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,128C672,117,768,139,864,160C960,181,1056,203,1152,197.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
+        animation: wave 10s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes wave {
+        0% { background-position: 0 bottom; }
+        100% { background-position: 1440px bottom; }
+    }
+
+    .hero {
+        text-align: center;
+        padding: 40px 0;
+        background: linear-gradient(45deg, #0288d1, #4fc3f7);
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        max-width: 550px;
+        margin: 0 auto;
+    }
+
+    .master-product {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .master-product:hover {
+        transform: scale(1.02);
+    }
+
+    .master-product img {
+        width: 220px;
+        height: 220px;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 10px;
+        margin-right: 15px;
+    }
+
+    .master-product .info {
+        flex: 1;
+    }
+
+    .master-product h2 {
+        font-size: 1.6rem;
+        color: #0288d1;
+        margin-bottom: 8px;
+    }
+
+    .master-product p {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .home-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 15px;
+    }
+
+    .product-section {
+        width: 100%;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    .product-grid.top {
+        margin-bottom: 20px;
+    }
+
+    .product-grid.bottom {
+        margin-top: 20px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card img:hover {
+        opacity: 0.9;
+    }
+
+    .product-info {
+        padding: 12px;
+        text-align: center;
+    }
+
+    .product-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .product-info .body-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .price {
+        color: #0288d1;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .price .strikethrough {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 5px;
+    }
+
+    .tags {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .views {
+        font-size: 0.75rem;
+        color: #999;
+        margin-bottom: 5px;
+    }
+
+    .glowing-btn {
+        display: inline-block;
+        padding: 8px 15px;
+        background: #0288d1;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 8px;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        font-size: 0.85rem;
+    }
+
+    .glowing-btn:hover {
+        background: #0277bd;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.7);
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .pagination a {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background: #0288d1;
+        border-radius: 5px;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+        line-height: 40px;
+    }
+
+    .pagination a:hover {
+        background: #0277bd;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.7);
+    }
+
+    .pagination a.disabled {
+        background: #b0bec5;
+        pointer-events: none;
+    }
+
+    .pagination svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+        vertical-align: middle;
+    }
+
+    .contact-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-container h1 {
+        font-size: 1.8rem;
+        color: #0288d1;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.9rem;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 0.9rem;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+
+    .success-message {
+        color: #4caf50;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .home-container {
+            margin: 20px auto;
+        }
+
+        .product-section {
+            min-width: 100%;
+        }
+
+        .hero {
+            padding: 30px 10px;
+        }
+
+        .hero h1 {
+            font-size: 1.8rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            max-width: 90%;
+        }
+
+        .master-product {
+            flex-direction: column;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .master-product img {
+            width: 180px;
+            height: 180px;
+            margin-right: 0;
+            margin-bottom: 12px;
+        }
+
+        .master-product h2 {
+            font-size: 1.4rem;
+        }
+
+        .master-product p {
+            font-size: 0.9rem;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .product-card img {
+            height: 160px;
+        }
+
+        .product-info h3 {
+            font-size: 1rem;
+        }
+
+        .product-info .body-text {
+            font-size: 0.8rem;
+        }
+
+        .price {
+            font-size: 0.95rem;
+        }
+
+        .tags, .views {
+            font-size: 0.7rem;
+        }
+
+        .glowing-btn {
+            padding: 7px 12px;
+            font-size: 0.8rem;
+        }
+
+        .pagination a {
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+        }
+
+        .pagination svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .contact-container {
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .contact-container h1 {
+            font-size: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            font-size: 0.85rem;
+            padding: 7px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .home-container {
+            margin: 10px auto;
+        }
+
+        .hero {
+            padding: 20px 8px;
+        }
+
+        .hero h1 {
+            font-size: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 0.9rem;
+        }
+
+        .master-product {
+            padding: 10px;
+        }
+
+        .master-product img {
+            width: 150px;
+            height: 150px;
+        }
+
+        .master-product h2 {
+            font-size: 1.2rem;
+        }
+
+        .master-product p {
+            font-size: 0.85rem;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .product-card img {
+            height: 140px;
+        }
+
+        .product-info {
+            padding: 10px;
+        }
+
+        .product-info h3 {
+            font-size: 0.95rem;
+        }
+
+        .product-info .body-text {
+            font-size: 0.75rem;
+        }
+
+        .price {
+            font-size: 0.9rem;
+        }
+
+        .tags, .views {
+            font-size: 0.65rem;
+        }
+
+        .glowing-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .pagination {
+            gap: 10px;
+        }
+
+        .pagination a {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .pagination svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .contact-container {
+            margin: 15px auto;
+            padding: 10px;
+        }
+
+        .contact-container h1 {
+            font-size: 1.3rem;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+    }
+</style>
+<div class="wave-bg"></div>
+<div class="home-container glowing-border">
+    <div class="product-section">
+        <section class="hero">
+            <h1>{% trans "Welcome to PureWave" %}</h1>
+            <p>{% trans "Discover the purest, most refreshing water for your health and hydration needs." %}</p>
+        </section>
+        <section class="master-product glowing-border">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="{% trans 'PureWave Premium Water' %}">
+            <div class="info">
+                <h2>{% trans "PureWave Premium Water" %}</h2>
+                <p>{% trans "Crystal-clear, mineral-rich water sourced from pristine springs. Hydrate with purity." %}</p>
+            </div>
+        </section>
+        <div class="pagination">
+            {% if maxsulot.has_previous %}
+                <a href="?page={{ maxsulot.previous_page_number }}" title="{% trans 'Previous' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+                </a>
+            {% else %}
+                <a href="#" class="disabled" title="{% trans 'Previous' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l-192 192z"/></svg>
+                </a>
+            {% endif %}
+            {% if maxsulot.has_next %}
+                <a href="?page={{ maxsulot.next_page_number }}" title="{% trans 'Next' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+                </a>
+            {% else %}
+                <a href="#" class="disabled" title="{% trans 'Next' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+                </a>
+            {% endif %}
+        </div>
+        <section class="product-grid top">
+            {% for product in maxsulot|slice:":3" %}
+            <div class="product-card glowing-border">
+                {% if product.image %}
+                <a href="{% url 'product_detail' product.slug %}">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                </a>
+                {% else %}
+                <a href="{% url 'product_detail' product.slug %}">
+                    <img src="https://via.placeholder.com/250" alt="{% trans 'Placeholder' %}">
+                </a>
+                {% endif %}
+                <div class="product-info">
+                    <h3>{{ product.title }}</h3>
+                    <p class="body-text">{{ product.body|truncatechars:50 }}</p>
+                    <p class="price">
+                        {% if product.last_price and product.last_price != 0 %}
+                        <span class="strikethrough">${{ product.price }}</span>
+                        ${{ product.last_price }}
+                        {% else %}
+                        ${{ product.price }}
+                        {% endif %}
+                    </p>
+                    <p class="tags">{% trans "Tags" %}: {{ product.tags.all|join:", " }}</p>
+                    <p class="views">{{ product.views_count }} {% trans "views" %}</p>
+                    <a href="{% url 'product_detail' product.slug %}" class="glowing-btn">{% trans "View Details" %}</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>{% trans "No products available yet." %}</p>
+            {% endfor %}
+        </section>
+        <section class="product-grid bottom">
+            {% for product in maxsulot|slice:"3:" %}
+            <div class="product-card glowing-border">
+                {% if product.image %}
+                <a href="{% url 'product_detail' product.slug %}">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                </a>
+                {% else %}
+                <a href="{% url 'product_detail' product.slug %}">
+                    <img src="https://via.placeholder.com/250" alt="{% trans 'Placeholder' %}">
+                </a>
+                {% endif %}
+                <div class="product-info">
+                    <h3>{{ product.title }}</h3>
+                    <p class="body-text">{{ product.body|truncatechars:50 }}</p>
+                    <p class="price">
+                        {% if product.last_price and product.last_price != 0 %}
+                        <span class="strikethrough">${{ product.price }}</span>
+                        ${{ product.last_price }}
+                        {% else %}
+                        ${{ product.price }}
+                        {% endif %}
+                    </p>
+                    <p class="tags">{% trans "Tags" %}: {{ product.tags.all|join:", " }}</p>
+                    <p class="views">{{ product.views_count }} {% trans "views" %}</p>
+                    <a href="{% url 'product_detail' product.slug %}" class="glowing-btn">{% trans "View Details" %}</a>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% if maxsulot.has_previous or maxsulot.has_next %}
+        <div class="pagination">
+            {% if maxsulot.has_previous %}
+                <a href="?page={{ maxsulot.previous_page_number }}" title="{% trans 'Previous' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c-12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+                </a>
+            {% else %}
+                <a href="#" class="disabled" title="{% trans 'Previous' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+                </a>
+            {% endif %}
+            {% if maxsulot.has_next %}
+                <a href="?page={{ maxsulot.next_page_number }}" title="{% trans 'Next' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+                </a>
+            {% else %}
+                <a href="#" class="disabled" title="{% trans 'Next' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+        <section class="master-product glowing-border">
+            <img src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="{% trans 'PureWave Sparkling Water' %}">
+            <div class="info">
+                <h2>{% trans "PureWave Sparkling Water" %}</h2>
+                <p>{% trans "Effervescent and refreshing, our sparkling water adds a fizz to your day." %}</p>
+            </div>
+        </section>
+        <section class="contact-container glowing-border">
+            <h1>{% trans "Contact Us" %}</h1>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="success-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            <form method="post" action="{% url 'contact' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_name">{% trans "Name" %}</label>
+                    {{ form.name }}
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name">{% trans "Last Name" %}</label>
+                    {{ form.last_name }}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">{% trans "Email" %}</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    <label for="id_message">{% trans "Message" %}</label>
+                    {{ form.message }}
+                </div>
+                <button type="submit" class="glowing-btn">{% trans "Send Message" %}</button>
+            </form>
+        </section>
+    </div>
+</div>
+<script>
+    const cards = document.querySelectorAll('.product-card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeIn 0.5s ease-in';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => observer.observe(card));
+</script>
+{% endblock %}

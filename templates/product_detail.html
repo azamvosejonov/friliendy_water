@@ -1,0 +1,561 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.title }} - PureWave{% endblock %}
+{% block content %}
+<style>
+    .product-detail {
+        max-width: 1000px;
+        margin: 40px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .product-image {
+        flex: 1;
+        min-width: 300px;
+        cursor: pointer;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        border-radius: 10px;
+    }
+
+    .product-info {
+        flex: 2;
+        min-width: 300px;
+    }
+
+    .product-info h1 {
+        font-size: 2rem;
+        color: #0288d1;
+        margin-bottom: 10px;
+    }
+
+    .product-info p {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .price {
+        color: #0288d1;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .tags {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .views {
+        font-size: 0.8rem;
+        color: #999;
+        margin-bottom: 20px;
+    }
+
+    .rating {
+        margin-bottom: 10px;
+    }
+
+    .star-rating {
+        display: inline-block;
+        font-size: 1.2rem;
+        color: #ccc;
+    }
+
+    .star-rating .fa-star {
+        color: #ccc;
+    }
+
+    .star-rating .filled {
+        color: #f39c12;
+    }
+
+    .comments-section {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .comments-section h2 {
+        font-size: 1.5rem;
+        color: #0288d1;
+        margin-bottom: 15px;
+    }
+
+    .comment-carousel {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 180px;
+    }
+
+    .comment-track {
+        display: flex;
+        transition: transform 0.5s ease;
+    }
+
+    .comment {
+        flex: 0 0 300px;
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 15px;
+        margin-right: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment p {
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .comment .user {
+        font-weight: 600;
+        color: #0288d1;
+        margin-bottom: 5px;
+    }
+
+    .comment .date {
+        font-size: 0.7rem;
+        color: #999;
+    }
+
+    .comment .star-rating {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #0288d1;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease;
+    }
+
+    .carousel-btn:hover {
+        background: #0277bd;
+    }
+
+    .carousel-btn.prev {
+        left: 10px;
+    }
+
+    .carousel-btn.next {
+        right: 10px;
+    }
+
+    .comment-form {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .comment-input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #0288d1;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: box-shadow 0.3s ease;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.5);
+        animation: glowInput 2s ease-in-out infinite;
+    }
+
+    .comment-input:focus {
+        box-shadow: 0 0 15px rgba(2, 136, 209, 1);
+    }
+
+    @keyframes glowInput {
+        0% { box-shadow: 0 0 10px rgba(2, 136, 209, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(2, 136, 209, 0.8); }
+        100% { box-shadow: 0 0 10px rgba(2, 136, 209, 0.5); }
+    }
+
+    .comment-submit {
+        padding: 10px 20px;
+        background: #0288d1;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .comment-submit:hover {
+        background: #0277bd;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.7);
+    }
+
+    .messages {
+        margin-bottom: 15px;
+    }
+
+    .message {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .message.success {
+        background: #dff0d8;
+        color: #3c763d;
+    }
+
+    .message.error {
+        background: #f2dede;
+        color: #a94442;
+    }
+
+    .rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+
+    .rating-input input {
+        display: none;
+    }
+
+    .rating-input label {
+        font-size: 1.2rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .rating-input label:hover,
+    .rating-input label:hover ~ label,
+    .rating-input input:checked ~ label {
+        color: #f39c12;
+    }
+
+    .image-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .product-detail {
+            flex-direction: column;
+            padding: 15px;
+            margin: 20px auto;
+        }
+
+        .product-image img {
+            height: 250px;
+            min-width: 100%;
+        }
+
+        .product-info h1 {
+            font-size: 1.8rem;
+        }
+
+        .product-info p {
+            font-size: 0.95rem;
+        }
+
+        .price {
+            font-size: 1.1rem;
+        }
+
+        .tags {
+            font-size: 0.85rem;
+        }
+
+        .views {
+            font-size: 0.75rem;
+        }
+
+        .star-rating {
+            font-size: 1.1rem;
+        }
+
+        .comments-section h2 {
+            font-size: 1.3rem;
+        }
+
+        .comment-carousel {
+            height: 200px;
+        }
+
+        .comment {
+            flex: 0 0 250px;
+            padding: 12px;
+        }
+
+        .comment p {
+            font-size: 0.85rem;
+        }
+
+        .comment .user {
+            font-size: 0.9rem;
+        }
+
+        .comment .date {
+            font-size: 0.65rem;
+        }
+
+        .comment .star-rating {
+            font-size: 0.85rem;
+        }
+
+        .carousel-btn {
+            width: 35px;
+            height: 35px;
+            font-size: 0.9rem;
+        }
+
+        .rating-input label {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-detail {
+            padding: 10px;
+        }
+
+        .product-image img {
+            height: 200px;
+        }
+
+        .product-info h1 {
+            font-size: 1.5rem;
+        }
+
+        .product-info p {
+            font-size: 0.9rem;
+        }
+
+        .price {
+            font-size: 1rem;
+        }
+
+        .tags {
+            font-size: 0.8rem;
+        }
+
+        .views {
+            font-size: 0.7rem;
+        }
+
+        .star-rating {
+            font-size: 1rem;
+        }
+
+        .comments-section h2 {
+            font-size: 1.2rem;
+        }
+
+        .comment-carousel {
+            height: 220px;
+        }
+
+        .comment {
+            flex: 0 0 200px;
+            padding: 10px;
+        }
+
+        .comment p {
+            font-size: 0.8rem;
+        }
+
+        .comment .user {
+            font-size: 0.85rem;
+        }
+
+        .comment .date {
+            font-size: 0.6rem;
+        }
+
+        .comment .star-rating {
+            font-size: 0.8rem;
+        }
+
+        .carousel-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+
+        .comment-form {
+            flex-direction: column;
+        }
+
+        .comment-input {
+            font-size: 0.85rem;
+        }
+
+        .comment-submit {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .rating-input label {
+            font-size: 1rem;
+        }
+    }
+</style>
+<div class="product-detail glowing-border">
+    <div class="product-image" onclick="openImageModal()">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+        {% else %}
+        <img src="https://via.placeholder.com/300" alt="Placeholder">
+        {% endif %}
+    </div>
+    <div class="product-info">
+        <h1>{{ product.title }}</h1>
+        <div class="rating">
+            <span class="star-rating">
+                {% for i in "12345" %}
+                {% if i|add:".0" <= average_rating|add:".5" %}
+                <i class="fa-star fas filled"></i>
+                {% else %}
+                <i class="fa-star fas"></i>
+                {% endif %}
+                {% endfor %}
+            </span>
+            ({{ average_rating }} / 5)
+        </div>
+        <p>{{ product.body }}</p>
+        <p class="price">
+            {% if product.last_price and product.last_price != 0 %}
+            <span style="text-decoration: line-through;">${{ product.proce }}</span>
+            ${{ product.last_price }}
+            {% else %}
+            ${{ product.proce }}
+            {% endif %}
+        </p>
+        <p class="tags">Tags: {{ product.tags.all|join:", " }}</p>
+        <p class="views">{{ product.views_count }} views</p>
+    </div>
+    <div class="comments-section">
+        <h2>Comments</h2>
+        <div class="comment-carousel">
+            <div class="comment-track" id="commentTrack">
+                {% for comment in comments %}
+                <div class="comment">
+                    <p class="user">{{ comment.user.username }}</p>
+                    <span class="star-rating">
+                        {% for i in "12345" %}
+                        {% if i|add:0 <= comment.rating %}
+                        <i class="fa-star fas filled"></i>
+                        {% else %}
+                        <i class="fa-star fas"></i>
+                        {% endif %}
+                        {% endfor %}
+                    </span>
+                    <p>{{ comment.content }}</p>
+                    <p class="date">{{ comment.created_at|date:"F d, Y H:i" }}</p>
+                </div>
+                {% empty %}
+                <div class="comment">
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if comments %}
+            <button class="carousel-btn prev" onclick="moveCarousel(-1)">❮</button>
+            <button class="carousel-btn next" onclick="moveCarousel(1)">❯</button>
+            {% endif %}
+        </div>
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        <form class="comment-form" method="POST">
+            {% csrf_token %}
+            <textarea class="comment-input" name="content" placeholder="Add your comment..." required></textarea>
+            <div class="rating-input">
+                {% for i in "54321" %}
+                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if i == "1" %}checked{% endif %}>
+                <label for="star{{ i }}" class="fas fa-star"></label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="comment-submit">Post Comment</button>
+        </form>
+    </div>
+</div>
+<div class="image-modal" id="imageModal" onclick="closeImageModal(event)">
+    {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+    {% else %}
+    <img src="https://via.placeholder.com/300" alt="Placeholder">
+    {% endif %}
+</div>
+<script>
+    let currentIndex = 0;
+    const track = document.getElementById('commentTrack');
+    const comments = document.querySelectorAll('.comment');
+    const commentWidth = 315; // Width of comment + margin (300px + 15px)
+
+    function moveCarousel(direction) {
+        currentIndex += direction;
+        if (currentIndex < 0) {
+            currentIndex = comments.length - 1;
+        } else if (currentIndex >= comments.length) {
+            currentIndex = 0;
+        }
+        track.style.transform = `translateX(-${currentIndex * commentWidth}px)`;
+    }
+
+    // Auto-scroll carousel every 5 seconds
+    {% if comments %}
+    setInterval(() => {
+        moveCarousel(1);
+    }, 5000);
+    {% endif %}
+
+    function openImageModal() {
+        document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    function closeImageModal(event) {
+        if (event.target === document.getElementById('imageModal') || event.target.tagName === 'IMG') {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

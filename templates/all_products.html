@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "All Products" %}{% endblock %}
+{% block content %}
+<style>
+    .wave-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.3)" fill-opacity="1" d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,128C672,117,768,139,864,160C960,181,1056,203,1152,197.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
+        animation: wave 10s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes wave {
+        0% { background-position: 0 bottom; }
+        100% { background-position: 1440px bottom; }
+    }
+
+    .products-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 15px;
+        display: flex;
+        gap: 20px;
+    }
+
+    .product-grid {
+        flex: 3;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        min-height: 450px;
+        min-width: 350px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card img:hover {
+        opacity: 0.9;
+    }
+
+    .product-info {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .product-info h3 {
+        font-size: 1.7rem;
+        margin-bottom: 14px;
+        color: #333;
+    }
+
+    .product-info .body-text {
+        font-size: 1.15rem;
+        color: #666;
+        margin-bottom: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .price {
+        color: #0288d1;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+
+    .price .strikethrough {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 5px;
+    }
+
+    .tags {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .views {
+        font-size: 1rem;
+        color: #999;
+        margin-bottom: 12px;
+    }
+
+    .glowing-btn {
+        display: inline-block;
+        padding: 14px 22px;
+        background: #0288d1;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 14px;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .glowing-btn:hover {
+        background: #0277bd;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.7);
+    }
+
+    .sidebar {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar h3 {
+        font-size: 1.2rem;
+        color: #0288d1;
+        margin-bottom: 10px;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 5px 0;
+        color: #333;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+        color: #e91e63;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .pagination a {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background: #0288d1;
+        border-radius: 5px;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+        line-height: 40px;
+    }
+
+    .pagination a:hover {
+        background: #0277bd;
+        box-shadow: 0 0 10px rgba(2, 136, 209, 0.7);
+    }
+
+    .pagination a.disabled {
+        background: #b0bec5;
+        pointer-events: none;
+    }
+
+    .pagination svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+        vertical-align: middle;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1003;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .products-container {
+            flex-direction: column;
+            margin: 20px auto;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .product-card img {
+            height: 240px;
+        }
+
+        .product-info h3 {
+            font-size: 1.3rem;
+        }
+
+        .product-info .body-text {
+            font-size: 0.95rem;
+        }
+
+        .price {
+            font-size: 1.2rem;
+        }
+
+        .tags, .views {
+            font-size: 0.85rem;
+        }
+
+        .glowing-btn {
+            padding: 12px 18px;
+            font-size: 0.95rem;
+        }
+
+        .sidebar {
+            padding: 10px;
+        }
+
+        .sidebar h3 {
+            font-size: 1.1rem;
+        }
+
+        .sidebar a {
+            font-size: 0.85rem;
+        }
+
+        .pagination a {
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+        }
+
+        .pagination svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .products-container {
+            margin: 10px auto;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .product-card img {
+            height: 200px;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .product-info h3 {
+            font-size: 1.2rem;
+        }
+
+        .product-info .body-text {
+            font-size: 0.9rem;
+        }
+
+        .price {
+            font-size: 1.1rem;
+        }
+
+        .tags, .views {
+            font-size: 0.8rem;
+        }
+
+        .glowing-btn {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+
+        .sidebar {
+            padding: 8px;
+        }
+
+        .sidebar h3 {
+            font-size: 1rem;
+        }
+
+        .sidebar a {
+            font-size: 0.8rem;
+        }
+
+        .pagination {
+            gap: 10px;
+        }
+
+        .pagination a {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .pagination svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+</style>
+<div class="wave-bg"></div>
+<div class="products-container glowing-border">
+    <div class="product-grid">
+        {% for product in page_obj %}
+        <div class="product-card glowing-border">
+            {% if product.image %}
+            <a href="{% url 'product_detail' product.slug %}">
+                <img src="{{ product.image.url }}" alt="{{ product.title }}" class="product-image" data-full-image="{{ product.image.url }}">
+            </a>
+            {% else %}
+            <a href="{% url 'product_detail' product.slug %}">
+                <img src="https://via.placeholder.com/250" alt="{% trans 'Placeholder' %}" class="product-image" data-full-image="https://via.placeholder.com/250">
+            </a>
+            {% endif %}
+            <div class="product-info">
+                <h3>{{ product.title }}</h3>
+                <p class="body-text">{{ product.body|truncatechars:50 }}</p>
+                <p class="price">
+                    {% if product.last_price and product.last_price != 0 %}
+                    <span class="strikethrough">${{ product.price }}</span>
+                    ${{ product.last_price }}
+                    {% else %}
+                    ${{ product.price }}
+                    {% endif %}
+                </p>
+                <p class="tags">{% trans "Tags" %}: {{ product.tags.all|join:", " }}</p>
+                <p class="views">{{ product.views_count }} {% trans "views" %}</p>
+                <a href="{% url 'product_detail' product.slug %}" class="glowing-btn">{% trans "View Details" %}</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>{% trans "No products available." %}</p>
+        {% endfor %}
+    </div>
+    <div class="sidebar glowing-border">
+        <h3>{% trans "Categories" %}</h3>
+        {% for category in categories %}
+        <a href="{% url 'category_detail' slug=category.slug %}">{{ category.name }}</a>
+        {% endfor %}
+        <h3>{% trans "Contact" %}</h3>
+        <a href="{% url 'contact' %}">{% trans "Contact Us" %}</a>
+    </div>
+</div>
+<div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" title="{% trans 'Previous' %}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+    </a>
+    {% else %}
+    <a href="#" class="disabled" title="{% trans 'Previous' %}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg>
+    </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" title="{% trans 'Next' %}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+    </a>
+    {% else %}
+    <a href="#" class="disabled" title="{% trans 'Next' %}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
+    </a>
+    {% endif %}
+</div>
+<div class="modal" id="imageModal">
+    <img src="" alt="{% trans 'Full Image' %}">
+</div>
+<script>
+    const images = document.querySelectorAll('.product-image');
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('img');
+    const cards = document.querySelectorAll('.product-card');
+
+    images.forEach(img => {
+        img.addEventListener('click', () => {
+            modalImg.src = img.dataset.fullImage;
+            modal.style.display = 'flex';
+        });
+    });
+
+    modal.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeIn 0.5s ease-in';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => observer.observe(card));
+</script>
+{% endblock %}
