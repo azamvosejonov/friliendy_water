@@ -5320,3 +5320,19 @@ File /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/PI
 File /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/django/core/management/utils.py first seen with mtime 1747981585.3146553
 code 400, message Bad HTTP/0.9 request type ("\x16\x03\x01\x02z\x01\x00\x02v\x03\x03ÂxëT\x16Èyp^JN\x94\x9f¥¼Ô|Æ\x82à(\x86=Ð%]ÒÌ»¯'\xad")
 You're accessing the development server over HTTPS, but it only supports HTTP.
+CREATE TABLE "new__maxsulot_comment" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "content" text NOT NULL, "rating" integer unsigned NOT NULL CHECK ("rating" >= 0), "created_at" datetime NOT NULL, "product_id" bigint NOT NULL REFERENCES "maxsulot_maxsulot" ("id") DEFERRABLE INITIALLY DEFERRED); (params None)
+INSERT INTO "new__maxsulot_comment" ("id", "content", "rating", "created_at", "product_id") SELECT "id", "content", "rating", "created_at", "product_id" FROM "maxsulot_comment"; (params ())
+DROP TABLE "maxsulot_comment"; (params ())
+ALTER TABLE "new__maxsulot_comment" RENAME TO "maxsulot_comment"; (params ())
+CREATE INDEX "maxsulot_comment_product_id_bbf3cd09" ON "maxsulot_comment" ("product_id"); (params ())
+Watching for file changes with StatReloader
+Waiting for apps ready_event.
+Apps ready_event triggered. Sending autoreload_started signal.
+Watching dir /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/jazzmin/templates with glob **/*.
+Watching dir /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/taggit/templates with glob **/*.
+Watching dir /home/kali/Desktop/Git/friliendy_water/templates with glob **/*.
+Watching dir /home/kali/Desktop/Git/friliendy_water/locale with glob **/*.mo.
+Watching dir /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/jazzmin/locale with glob **/*.mo.
+Watching dir /home/kali/Desktop/Git/friliendy_water/maxsulot/locale with glob **/*.mo.
+Watching dir /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/taggit/locale with glob **/*.mo.
+Watching dir /home/kali/Desktop/Git/friliendy_water/venv/lib/python3.13/site-packages/corsheaders/locale with glob **/*.mo.

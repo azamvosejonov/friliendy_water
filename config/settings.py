@@ -4,16 +4,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-8a@@#8a-2uz6_ku5h$)4#=8j)c!k@p-gqt-_9qd!dn+j1pbhau'
 
-DEBUG = True  # Xatoni aniqlash uchun True
+DEBUG = False  # Xatoni aniqlash uchun True
 
 ALLOWED_HOSTS = ['friendly-water.uz', 'www.friendly-water.uz', 'localhost', '127.0.0.1']
-CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'http://friendly-water.uz',
-    'http://www.friendly-water.uz',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    "http://friendly-water.uz",
+    "http://www.friendly-water.uz",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
+CORS_ALLOW_ALL_ORIGINS = False
 
 INSTALLED_APPS = [
     'jazzmin',

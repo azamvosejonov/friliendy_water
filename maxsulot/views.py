@@ -71,7 +71,6 @@ def product_detail(request, slug):
                 if 1 <= rating <= 5:
                     Comment.objects.create(
                         product=product,
-                        user=request.user,
                         content=content,
                         rating=rating
                     )
@@ -139,3 +138,7 @@ def categories(request):
         'categories': categories,
     }
     return render(request, 'categories.html', context)
+
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)

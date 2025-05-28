@@ -19,6 +19,6 @@ class MaxsulotAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product', 'content', 'rating', 'created_at']
-    list_filter = ['created_at', 'user', 'rating']
-    search_fields = ['content', 'user__username']
+    list_display = [ 'product', 'content', 'rating', 'created_at']
+    list_filter = ['created_at',  'rating']
+    search_fields = ['content']

@@ -117,12 +117,7 @@
     .comment p {
         font-size: 0.9rem;
         color: #333;
-    }
-
-    .comment .user {
-        font-weight: 600;
-        color: #0288d1;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
     }
 
     .comment .date {
@@ -327,10 +322,6 @@
             font-size: 0.85rem;
         }
 
-        .comment .user {
-            font-size: 0.9rem;
-        }
-
         .comment .date {
             font-size: 0.65rem;
         }
@@ -400,10 +391,6 @@
             font-size: 0.8rem;
         }
 
-        .comment .user {
-            font-size: 0.85rem;
-        }
-
         .comment .date {
             font-size: 0.6rem;
         }
@@ -471,12 +458,11 @@
         <p class="views">{{ product.views_count }} views</p>
     </div>
     <div class="comments-section">
-        <h2>Comments</h2>
+        <h2>Sharhlar</h2>
         <div class="comment-carousel">
             <div class="comment-track" id="commentTrack">
                 {% for comment in comments %}
                 <div class="comment">
-                    <p class="user">{{ comment.user.username }}</p>
                     <span class="star-rating">
                         {% for i in "12345" %}
                         {% if i|add:0 <= comment.rating %}
@@ -491,7 +477,7 @@
                 </div>
                 {% empty %}
                 <div class="comment">
-                    <p>No comments yet. Be the first to comment!</p>
+                    <p>Hali sharhlar yo'q. Birinchi bo'lib sharh qoldiring!</p>
                 </div>
                 {% endfor %}
             </div>
@@ -507,14 +493,14 @@
         </div>
         <form class="comment-form" method="POST">
             {% csrf_token %}
-            <textarea class="comment-input" name="content" placeholder="Add your comment..." required></textarea>
+            <textarea class="comment-input" name="content" placeholder="Sharhingizni qoldiring..." required></textarea>
             <div class="rating-input">
                 {% for i in "54321" %}
                 <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if i == "1" %}checked{% endif %}>
                 <label for="star{{ i }}" class="fas fa-star"></label>
                 {% endfor %}
             </div>
-            <button type="submit" class="comment-submit">Post Comment</button>
+            <button type="submit" class="comment-submit">Sharhni yuborish</button>
         </form>
     </div>
 </div>

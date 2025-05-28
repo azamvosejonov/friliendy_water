@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   app:
     build: .
@@ -11,7 +10,6 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - app-network
-
   nginx:
     image: nginx:latest
     ports:
@@ -24,11 +22,9 @@ services:
       - app
     networks:
       - app-network
-
 networks:
   app-network:
     driver: bridge
-
 volumes:
   static-data:
   media-data:
